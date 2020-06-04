@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.dto.User2Dto;
 import com.example.dto.UserDto;
-import com.example.entity.User;
+import com.example.entity.UserEntity;
 import com.example.repository.UserRepository;
 import com.example.utils.CustomObjectMapper;
 
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
 	private UserRepository repository;
 
 	public UserDto getUserInfo(User2Dto user2) {
-		User entity = new User();
+		UserEntity entity = new UserEntity();
 		
 		try {
 			entity = repository.verifyUser(user2.getUsername(), user2.getPassword());
@@ -53,9 +53,9 @@ public class UserServiceImpl implements UserService {
 		}
 
 		UserDto dto2 = new UserDto(dto.getId(), dto.getUsername(), dto.getPassword(), dto.getGender(),
-				dto.getLast_login());
+				dto.getLast_login(), dto.isEnabled());
 		dto2.setLast_login(localDate);
-		User entity = CustomObjectMapper.map(dto2, User.class);
+		UserEntity entity = CustomObjectMapper.map(dto2, UserEntity.class);
 		repository.save(entity);
 	}
 }
