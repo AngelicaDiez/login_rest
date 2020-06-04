@@ -19,9 +19,6 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 
 	@Autowired
 	private DataSource dataSource;
-	
-//	@Autowired
-//	private MyUserDetailsService myUserDetailsService;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -31,8 +28,6 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 			.authoritiesByUsernameQuery("SELECT u.username, r.authority FROM roles r, users u "
 										+ "WHERE u.username = ? AND u.id = r.id_username")
 			.passwordEncoder(passwordEncoder());
-		
-//		auth.jdbcAuthentication().dataSource(dataSource).and().userDetailsService(myUserDetailsService);
 	}
 
 	@Override
