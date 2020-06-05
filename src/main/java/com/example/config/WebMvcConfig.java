@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.example.controller", "com.example.service", "com.example.repository"})
+@ComponentScan(basePackages = {"com.example.controller", "com.example.service", "com.example.repository", "com.example.config"})
 @Import(value = {DatabaseConfiguration.class, CustomWebSecurityConfigurerAdapter.class})
 public class WebMvcConfig {
 

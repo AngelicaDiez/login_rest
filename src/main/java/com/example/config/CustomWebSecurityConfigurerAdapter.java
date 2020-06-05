@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -19,32 +20,42 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 
 	@Autowired
 	private DataSource dataSource;
+	
+	@Autowired
+	private MyBasicAuthenticationEntryPoint basicAuthenticationEntryPoint;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication()
-			.dataSource(dataSource)
-			.usersByUsernameQuery("SELECT username, password, 'true' as enabled FROM users WHERE username = ?")
-			.authoritiesByUsernameQuery("SELECT u.username, r.authority FROM roles r, users u "
-										+ "WHERE u.username = ? AND u.id = r.id_username")
-			.passwordEncoder(passwordEncoder());
+		auth.jdbcAuthentication().dataSource(dataSource)
+				.usersByUsernameQuery("SELECT username, password, 'true' as enabled FROM users WHERE username = ?")
+				.authoritiesByUsernameQuery("SELECT u.username, r.authority FROM roles r, users u "
+						+ "WHERE u.username = ? AND u.id = r.id_username")
+				.passwordEncoder(passwordEncoder());
 	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.httpBasic()
+		http.httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint)
 			.and()
 			.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/admin").hasRole("ADMIN")
-			.antMatchers(HttpMethod.GET, "/user").hasAnyRole("ADMIN", "USER");
-//			.anyRequest().authenticated();
+//			.antMatchers(HttpMethod.GET, "/user").hasAnyRole("ADMIN", "USER")
+			.anyRequest().authenticated();
+//			.and()
+//			.formLogin()
+//			.failureHandler(customAuthenticationFailureHandler());
 	}
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 //		String encoded = new BCryptPasswordEncoder().encode(plainText);
 //		System.out.println(encoded);
-	    return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder();
 	}
-
+	
+	@Bean
+    public AuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return new MyAuthenticationFailureHandler();
+    }
+	
 }
